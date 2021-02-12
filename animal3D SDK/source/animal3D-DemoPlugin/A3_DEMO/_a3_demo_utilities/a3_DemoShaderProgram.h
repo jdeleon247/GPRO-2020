@@ -93,8 +93,16 @@ extern "C"
 				ubTransformMVP;		// model-view-projection matrix block
 		};
 
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> add lighting uniform and block handles
+		struct 
+		{
+			a3i32
+				// struct to hold lighting uniform and block handles
+				uLightPos,		// view space positions of a set of lights
+				uLightRadii,	// radii of the lights
+				uLightColor;	// colors of the lights
+		};
 
 	};
 
