@@ -200,6 +200,8 @@ void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 
 	// ****DONE
 	//	-> implement "render" from tutorial
+
+	// Makes rainbow effect
 	const float color[] = {
 		cosf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
 	   sinf((float)demoState->dt_timer_tot) * 0.5f + 0.5f,
