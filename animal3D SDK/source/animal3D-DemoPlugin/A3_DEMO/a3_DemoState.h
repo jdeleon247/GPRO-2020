@@ -193,20 +193,20 @@ struct a3_DemoState
 	};
 
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment buffers union
-/*	// draw data buffers
+	// draw data buffers
 	union {
 		a3_VertexBuffer drawDataBuffer[demoStateMaxCount_drawDataBuffer];
 		struct {
 			a3_VertexBuffer
 				vbo_staticSceneObjectDrawBuffer[1];			// buffer to hold all data for static scene objects (e.g. grid)
 		};
-	};*/
+	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment vertex arrays union
-/*	// vertex array objects
+	// vertex array objects
 	union {
 		a3_VertexArrayDescriptor vertexArray[demoStateMaxCount_vertexArray];
 		struct {
@@ -217,9 +217,9 @@ struct a3_DemoState
 				vao_position_color[1],						// VAO for vertex format with position and color
 				vao_position[1];							// VAO for vertex format with only position
 		};
-	};*/
+	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment drawables union
 	// drawables
 	union {
