@@ -26,6 +26,8 @@
 	********************************************
 */
 
+// Modified by Jonathan DeLeon
+
 //-----------------------------------------------------------------------------
 
 #include "../a3_DemoMode0_Intro.h"
@@ -77,26 +79,23 @@ void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode,
 	//	-> update the remaining scene objects and their matrix stacks
 	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_cylinder,
 		(a3ui32)(demoMode->obj_ground - demoMode->obj_cylinder), 2, demoState->updateAnimation);
+	// update cylinder
 	a3demo_updateSceneObject(demoMode->obj_cylinder, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_cylinder, projector);
 
-	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_capsule,
-		(a3ui32)(demoMode->obj_ground - demoMode->obj_capsule), 2, demoState->updateAnimation);
+	// update capsule
 	a3demo_updateSceneObject(demoMode->obj_capsule, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_capsule, projector);
 
-	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_torus,
-		(a3ui32)(demoMode->obj_ground - demoMode->obj_torus), 2, demoState->updateAnimation);
+	// update torus
 	a3demo_updateSceneObject(demoMode->obj_torus, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_torus, projector);
 
-	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_cone,
-		(a3ui32)(demoMode->obj_ground - demoMode->obj_cone), 2, demoState->updateAnimation);
+	// update cone
 	a3demo_updateSceneObject(demoMode->obj_cone, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_cone, projector);
 
-	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_teapot,
-		(a3ui32)(demoMode->obj_ground - demoMode->obj_teapot), 2, demoState->updateAnimation);
+	// update teapot
 	a3demo_updateSceneObject(demoMode->obj_teapot, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_teapot, projector);
 

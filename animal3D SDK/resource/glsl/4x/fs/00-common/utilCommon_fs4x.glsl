@@ -22,3 +22,11 @@
 	Common utilities for fragment shaders.
 */
 
+// Modified by Jonathan DeLeon
+
+// Returns a vector made from the products of each value in two inputs 
+vec4 blendVectors(vec4 first, vec4 second)
+{
+	return vec4(first[0] * second[0], first[1] * second[1], first[2] * second[2], first[3] * second[3]);
+}
+

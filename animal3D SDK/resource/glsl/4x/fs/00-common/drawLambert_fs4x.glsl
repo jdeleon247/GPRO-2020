@@ -35,10 +35,32 @@
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
 
+// Credit: OpenGL SuperBible pg.668
+
 layout (location = 0) out vec4 rtFragColor;
+in vec2 vTexcoord;
+
+in vec4 vPosition;
+in vec4 vNormal;
+
+uniform sampler2D uSampler;
+uniform vec4 uColor;
+
+uniform vec4 uLightPos;
+
+vec4 blendVectors(vec4 first, vec4 second);
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE LIME
-	rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
+	vec4 N = normalize(vNormal);
+	vec4 L = normalize(uLightPos - vPosition);
+	float kd = dot(N,L);
+
+	vec4 tex = texture(uSampler, vTexcoord);
+
+
+	vec4 colorTexture = blendVectors(tex, uColor);
+	vec4 light = vec4(kd, kd, kd, 1.0);
+
+	rtFragColor = blendVectors(colorTexture, light);
 }
