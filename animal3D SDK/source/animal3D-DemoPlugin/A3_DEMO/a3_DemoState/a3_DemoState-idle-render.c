@@ -208,6 +208,11 @@ void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 	   0.0f, 1.0f
 	};
 	glClearBufferfv(GL_COLOR, 0, color);
+	
+	glUseProgram(demoState->rendering_program);
+	glPointSize(40.0f);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
 }
 
 void a3demo_render(a3_DemoState const* demoState, a3f64 const dt)
