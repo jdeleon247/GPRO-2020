@@ -22,9 +22,11 @@
 	Calculate and pass tangent basis, and shadow coordinate.
 */
 
+// Modified by Jonathan DeLeon
+
 #version 450
 
-// ****TO-DO:
+// ****DONE:
 // 1) core transformation and lighting setup:
 //	-> declare data structures for projector and model matrix stacks
 //		(hint: copy and slightly modify demo object descriptors)
@@ -43,16 +45,59 @@
 //	-> declare and write varying for shadow coordinate
 
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec4 aNormal;
+layout (location = 8) in vec2 aTexcoord;
 
 flat out int vVertexID;
 flat out int vInstanceID;
 
+out vec4 vNormal;
+out vec4 vPosition;
+out vec2 vTexcoord;
+out vec4 vShadowCoord;
+
 uniform int uIndex;
+
+struct sProjectorMatrixStack
+{
+	mat4 projectionMat;
+	mat4 projectionMatInverse;
+	mat4 projectionBiasMat;
+	mat4 projectionBiasMatInverse;
+	mat4 viewProjectionMat;
+	mat4 viewProjectionMatInverse;
+	mat4 viewProjectionBiasMat;
+	mat4 viewProjectionBiasMatInverse;
+};
+
+struct sModelMatrixStack
+{
+	mat4 modelMat;
+	mat4 modelMatInverse;
+	mat4 modelMatInverseTranspose;
+	mat4 modelViewMat;
+	mat4 modelViewMatInverse;
+	mat4 modelViewMatInverseTranspose;
+	mat4 modelViewProjectionMat;
+	mat4 atlasMat;
+};
+
+uniform ubTransformStack
+{
+	sProjectorMatrixStack uCamera, uLight;
+	sModelMatrixStack uModel[16];
+};
 
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	vPosition = uModel[uIndex].modelViewMat * aPosition;
+	vNormal = uModel[uIndex].modelViewMatInverseTranspose * aNormal;
+	vTexcoord = aTexcoord;
+	
+	gl_Position = uCamera.projectionMat * vPosition;
+
+	vShadowCoord = uLight.viewProjectionBiasMat * uModel[uIndex].modelMat * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
