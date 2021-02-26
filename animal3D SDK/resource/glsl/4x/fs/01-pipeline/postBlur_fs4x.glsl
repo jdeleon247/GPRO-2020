@@ -22,6 +22,8 @@
 	Gaussian blur.
 */
 
+// Modified by Jonathan DeLeon
+
 #version 450
 
 // ****TO-DO:
@@ -30,14 +32,62 @@
 //	-> declare Gaussian blur function that samples along one axis
 //		(hint: the efficiency of this is described in class)
 
+// Source: OpenGL SuperBible pg.483-490
+
+uniform sampler2D uTex_dm;
+uniform sampler2D uSampler;
+
 in vec2 vTexcoord;
+in vec4 vTexcoord_atlas;
 
 uniform vec2 uAxis;
 
 layout (location = 0) out vec4 rtFragColor;
 
+// From OpenGL SuperBible
+const float weights[] = float[](
+0.0024499299678342,
+0.0043538453346397,
+0.0073599963704157,
+0.0118349786570722,
+0.0181026699707781,
+0.0263392293891488,
+0.0364543006660986,
+0.0479932050577658,
+0.0601029809166942,
+0.0715974486241365,
+0.0811305381519717,
+0.0874493212267511,
+0.0896631113333857,
+0.0874493212267511,
+0.0811305381519717,
+0.0715974486241365,
+0.0601029809166942,
+0.0479932050577658,
+0.0364543006660986,
+0.0263392293891488,
+0.0181026699707781,
+0.0118349786570722,
+0.0073599963704157,
+0.0043538453346397,
+0.0024499299678342);
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
-	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+	//rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+
+	vec2 offset = vTexcoord_atlas.xy;
+
+	vec3 color = vec3(0.0);
+
+	// Sample and add neighboring colors
+
+	for(int i = 0; i < weights.length(); i++)
+	{
+		color += texture(uTex_dm, offset + (uAxis * i)).rgb * weights[i];
+	}
+
+	rtFragColor = vec4(color,1.0);
+
 }
