@@ -91,7 +91,7 @@ void main()
 
 	// Calculate new positions
     float height = texture(uTex_hm, tessTexcoord.xy).r;
-    pos += normal * (height * 0.3f);
+    pos += normal * (height * 0.5f);
 
 	vTangentBasis_view = mat4(tangent, bitangent, normal, view);
 	vTexcoord_atlas = tessTexcoord;
