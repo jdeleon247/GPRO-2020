@@ -22,6 +22,8 @@
 	Pass interpolated and displaced tangent basis.
 */
 
+//Modified by Jonathan DeLeon
+
 #version 450
 
 // ****TO-DO: 
@@ -34,6 +36,17 @@
 //		gl_Position from the previous stage to get the hang of it)
 
 layout (triangles, equal_spacing) in;
+
+in vbVertexData_tess {
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+} vVertexData_tess[];
+
+out vbVertexData {
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+};
+
 
 void main()
 {

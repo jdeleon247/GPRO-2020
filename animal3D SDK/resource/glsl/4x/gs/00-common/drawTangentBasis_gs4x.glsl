@@ -23,6 +23,8 @@
 		determined by flag passed to program.
 */
 
+//Modified by Jonathan DeLeon
+
 #version 450
 
 // ****TO-DO: 
@@ -43,11 +45,51 @@
 
 layout (triangles) in;
 
+in vbVertexData {
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+} vVertexData[];
+
 layout (line_strip, max_vertices = MAX_VERTICES) out;
 
 out vec4 vColor;
 
+void drawWireframe()
+{
+	vColor = vec4(1.0, 0.0, 0.0, 1.0);
+
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+
+	EndPrimitive();
+	
+	vColor = vec4(0.0, 1.0, 0.0, 1.0);
+
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+
+	EndPrimitive();
+
+
+	vColor = vec4(0.0, 0.0, 1.0, 1.0);
+
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+
+	EndPrimitive();
+
+}
+
 void main()
 {
-	
+	drawWireframe();
 }

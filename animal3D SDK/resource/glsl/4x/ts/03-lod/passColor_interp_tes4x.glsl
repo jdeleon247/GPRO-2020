@@ -22,6 +22,8 @@
 	Pass color, outputting result of interpolation.
 */
 
+// Modified by Jonathan DeLeon
+
 #version 450
 
 // ****TO-DO: 
@@ -31,11 +33,44 @@
 
 layout (isolines, equal_spacing) in;
 
+uniform ubCurve
+{
+	vec4 uCurveWaypoint[32];
+	vec4 uCurveTangent[32];
+};
+
+uniform int uCount;
+
 uniform mat4 uP;
 
 out vec4 vColor;
 
 void main()
 {
-	
+	// Cubic interpolation from http://paulbourke.net/miscellaneous/interpolation/
+	// uses 4 points for each segment
+
+	int i0 = gl_PrimitiveID; // current patch
+	int i1 = (i0 + 1) % uCount; // next patch
+	int i2 = (i0 - 1) % uCount; // previous patch
+	int i3 = (i1 + 1) % uCount; // next next patch
+
+	float t = gl_TessCoord.x; 
+	float t_sq = t*t;
+
+	vec4 p0 = uCurveWaypoint[i2]; // previous point
+	vec4 p1 = uCurveWaypoint[i0]; // first point
+	vec4 p2 = uCurveWaypoint[i1]; // second point
+	vec4 p3 = uCurveWaypoint[i3]; // next next point
+
+	vec4 a0 = -0.5 * p0 + 1.5 * p1 - 1.5 * p2 + 0.5 * p3;
+	vec4 a1 = p0 - 2.5 * p1 + 2 * p2 - 0.5 * p3;
+	vec4 a2 = -0.5 * p0 + 0.5 * p2;
+	vec4 a3 = p1;
+
+	vec4 p = a0 * t * t_sq + a1 * t_sq + a2 * t + a3;
+
+	gl_Position = uP * p;
+
+	vColor = vec4(0.5, 0.5, t, 1.0);
 }
