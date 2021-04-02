@@ -47,32 +47,55 @@ out vbVertexData {
 	vec4 vTexcoord_atlas;
 };
 
-uniform mat4 uP;
 uniform sampler2D uTex_hm;
 
 void main()
 {
-	// Blend the vertex offset into the attributes of vTangentBasis_view
-	for(int i = 0; i < 4; i++)
-	{
-		vTangentBasis_view[i] = (gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[i] +
-								gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[i] +
-								gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[i]);
-	}
+	// Source: https://stackoverflow.com/questions/24166446/glsl-tessellation-displacement-mapping
 	
-	// Blend the vertex offset into the texcoords
-	vTexcoord_atlas = (gl_TessCoord.x * vVertexData_tess[0].vTexcoord_atlas +
-					   gl_TessCoord.y * vVertexData_tess[1].vTexcoord_atlas +
-					   gl_TessCoord.z * vVertexData_tess[2].vTexcoord_atlas);
+	// Weighted sum of points
+	vec4 p0 = gl_TessCoord.x * gl_in[0].gl_Position;
+    vec4 p1 = gl_TessCoord.y * gl_in[1].gl_Position;
+    vec4 p2 = gl_TessCoord.z * gl_in[2].gl_Position;
+    vec4 pos = p0 + p1 + p2;
+	
+	// Weighted sum of normals
+    vec4 n0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[2];
+    vec4 n1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[2];
+    vec4 n2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[2];
+    vec4 normal = normalize(n0 + n1 + n2);
+	
+	// Weighted sum of texture coordinates
+    vec4 tc0 = gl_TessCoord.x * vVertexData_tess[0].vTexcoord_atlas;
+    vec4 tc1 = gl_TessCoord.y * vVertexData_tess[1].vTexcoord_atlas;
+    vec4 tc2 = gl_TessCoord.z * vVertexData_tess[2].vTexcoord_atlas;  
+    vec4 tessTexcoord = tc0 + tc1 + tc2;
+	
+	// Weighted sum of tangents
+	vec4 t0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[0];
+    vec4 t1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[0];
+    vec4 t2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[0];
+    vec4 tangent = normalize(t0 + t1 + n2);
+	
+	// Weighted sum of bitangents
+	vec4 b0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[1];
+    vec4 b1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[1];
+    vec4 b2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[1];
+    vec4 bitangent = normalize(b0 + b1 + b2);
+	
+	// Weighted sum of view vectors
+	vec4 v0 = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[3];
+    vec4 v1 = gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[3];
+    vec4 v2 = gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[3];
+    vec4 view = normalize(v0 + v1 + v2);
 
-	// Get normal, position, and height at current vertex
-	vec4 normal = normalize(vTangentBasis_view[2]);
-	vec4 pos = vTangentBasis_view[3];
-	float height = texture(uTex_hm, vTexcoord_atlas.xy).x;
+	// Calculate new positions
+    float height = texture(uTex_hm, tessTexcoord.xy).r;
+    pos += normal * (height * 0.3f);
 
-	// Scale position by a factor of height in the direction of the normal
-	pos += normal * height; // Could implement a scaling factor on height to control the strength of displacement
+	vTangentBasis_view = mat4(tangent, bitangent, normal, view);
+	vTexcoord_atlas = tessTexcoord;
 
-	// Update position with displaced vertices
-	vTangentBasis_view[3] = pos;
-	 gl_Position = uP * vTangentBasis_view[3];
+	// output
+	gl_Position = pos;
+}
