@@ -26,6 +26,8 @@
 	********************************************
 */
 
+// Modified by Jonathan DeLeon
+
 //-----------------------------------------------------------------------------
 
 #include "../a3_DemoMode3_Curves.h"
@@ -59,6 +61,24 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//	-> update the animation timer
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
+
+		demoMode->curveSegmentTime += (a3real)dt;
+
+		if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration) // End of current segment
+		{
+			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration; // Reset current segment timer
+			demoMode->curveSegmentIndex++; // Move to next segment
+			demoMode->curveSegmentIndex %= demoMode->curveWaypointCount; // OOB check
+		}
+
+		demoMode->curveSegmentParam = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv; // Calculate interpolation coefficient
+
+		a3real3CatmullRom(sceneObjectData->position.v, // Function found in a3vector.h
+			demoMode->curveWaypoint[a3maximum(0, (demoMode->curveSegmentIndex - 1) % demoMode->curveWaypointCount)].v,
+			demoMode->curveWaypoint[demoMode->curveSegmentIndex + 0].v,
+			demoMode->curveWaypoint[(demoMode->curveSegmentIndex + 1) % demoMode->curveWaypointCount].v,
+			demoMode->curveWaypoint[a3minimum((demoMode->curveSegmentIndex + 2) % demoMode->curveWaypointCount, (demoMode->curveWaypointCount - 1) % demoMode->curveWaypointCount)].v,
+			demoMode->curveSegmentParam);
 
 	}
 }
