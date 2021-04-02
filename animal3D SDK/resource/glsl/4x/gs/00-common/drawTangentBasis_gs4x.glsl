@@ -45,6 +45,10 @@
 
 layout (triangles) in;
 
+uniform mat4 uP;
+uniform float uSize;
+uniform int uFlag;
+
 in vbVertexData {
 	mat4 vTangentBasis_view;
 	vec4 vTexcoord_atlas;
@@ -89,7 +93,68 @@ void drawWireframe()
 
 }
 
+void drawVertexTangent()
+{
+	vec4 tan = normalize(vVertexData[0].vTangentBasis_view[0]); // tangent
+	vec4 bit = normalize(vVertexData[0].vTangentBasis_view[1]); // bitangent
+	vec4 nrm = normalize(vVertexData[0].vTangentBasis_view[2]); // normal
+
+	vColor = vec4(1.0, 0.0, 0.0, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position + tan;
+	EmitVertex();
+	EndPrimitive();
+	
+	vColor = vec4(0.0, 1.0, 0.0, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position + bit;
+	EmitVertex();
+	EndPrimitive();
+	
+	vColor = vec4(0.0, 0.0, 1.0, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position + nrm;
+	EmitVertex();
+	EndPrimitive();
+}
+
+void drawFaceTangent()
+{
+	vec4 faceCenterPos = (gl_in[0].gl_Position + gl_in[1].gl_Position + gl_in[2].gl_Position)/3;	//Calculate center of each triangle
+	
+	vec4 tan = normalize(vVertexData[0].vTangentBasis_view[0]); // tangent
+	vec4 bit = normalize(vVertexData[0].vTangentBasis_view[1]); // bitangent
+	vec4 nrm = normalize(vVertexData[0].vTangentBasis_view[2]); // normal
+
+	vColor = vec4(1.0, 0.0, 0.0, 1.0);
+	gl_Position = faceCenterPos;
+	EmitVertex();
+	gl_Position = faceCenterPos + uSize *  uP * tan;
+	EmitVertex();
+	EndPrimitive();
+
+	vColor = vec4(0.0, 1.0, 0.0, 1.0);
+	gl_Position = faceCenterPos;
+	EmitVertex();
+	gl_Position = faceCenterPos + uSize *  uP * bit;
+	EmitVertex();
+	EndPrimitive();
+
+	vColor = vec4(0.0, 0.0, 1.0, 1.0);
+	gl_Position = faceCenterPos;
+	EmitVertex();
+	gl_Position = faceCenterPos + uSize * uP * nrm;
+	EmitVertex();
+	EndPrimitive();
+}
+
 void main()
 {
+	// Pressing the key to display any of these displays them all, couldn't figure that out
 	drawWireframe();
+	drawVertexTangent();
+	drawFaceTangent();
 }
