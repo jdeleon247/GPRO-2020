@@ -52,7 +52,6 @@ uniform float uLevelInner;
 
 void main()
 {
-	// Pass along vertex data
 	vVertexData_tess[gl_InvocationID].vTangentBasis_view
 		= vVertexData[gl_InvocationID].vTangentBasis_view;
 		vVertexData_tess[gl_InvocationID].vTexcoord_atlas

@@ -22,8 +22,6 @@
 	Calculate and pass tangent basis using uniform buffers.
 */
 
-//Modified by Jonathan DeLeon
-
 #version 450
 
 #define MAX_OBJECTS 128
