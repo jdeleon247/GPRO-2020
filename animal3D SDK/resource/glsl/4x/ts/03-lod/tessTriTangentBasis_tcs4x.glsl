@@ -52,7 +52,8 @@ uniform float uLevelInner;
 
 void main()
 {
-	// Pass along vertex data
+
+	// Passes along vertex data
 	vVertexData_tess[gl_InvocationID].vTangentBasis_view
 		= vVertexData[gl_InvocationID].vTangentBasis_view;
 		vVertexData_tess[gl_InvocationID].vTexcoord_atlas
@@ -62,4 +63,8 @@ void main()
 	gl_TessLevelOuter[1] = uLevelOuter[1];
 	gl_TessLevelOuter[2] = uLevelOuter[2];
 	gl_TessLevelInner[0] = uLevelInner;
+
+	// output to evaluation shader
+	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+
 }
