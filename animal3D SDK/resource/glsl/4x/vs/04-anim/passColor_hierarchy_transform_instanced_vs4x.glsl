@@ -22,13 +22,15 @@
 	Transform position attribute for instance and pass hierarchical color.
 */
 
+//Modified by Jonathan DeLeon
+
 #version 450
 
 #define MAX_INSTANCES 128
 
 #define MAX_COLORS 24
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare hierarchy depth info in uniform block
 //	-> use hierarchy depth to select color
 
@@ -36,6 +38,7 @@ layout (location = 0) in vec4 aPosition;
 
 uniform ubTransformMVP {
 	mat4 uMVP[MAX_INSTANCES];
+	int uHierachyDepth[MAX_COLORS];
 };
 
 uniform vec4 uColor0[MAX_COLORS];
@@ -51,7 +54,7 @@ void main()
 //	gl_Position = aPosition;
 	gl_Position = uMVP[gl_InstanceID] * aPosition;
 	
-	vColor = uColor0[gl_InstanceID];
+	vColor = uColor0[uHierachyDepth[gl_InstanceID]];
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

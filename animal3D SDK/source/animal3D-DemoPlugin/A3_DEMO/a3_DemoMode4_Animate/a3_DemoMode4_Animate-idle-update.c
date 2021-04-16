@@ -28,6 +28,8 @@
 
 //-----------------------------------------------------------------------------
 
+// Modified by Jonathan DeLeon
+
 #include "../a3_DemoMode4_Animate.h"
 
 //typedef struct a3_DemoState a3_DemoState;
@@ -78,15 +80,40 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			// testing: copy base pose
 			tmpPose = *pBase;
 
-			// ****TO-DO:
+			// ****DONE:
 			// interpolate channels
 
-			// ****TO-DO:
-			// concatenate base pose
+			a3vec4 newPos = a3vec4_zero, newRot = a3vec4_zero;
+			a3vec3 newScale = a3vec3_zero;
 
-			// ****TO-DO:
+			a3real4Lerp(newPos.v, p0->position.v, p1->position.v, u);
+			a3real4Lerp(newRot.v, p0->euler.v, p1->euler.v, u);
+			a3real3Lerp(newScale.v, p0->scale.v, p1->scale.v, u);
+
+			// ****DONE:
+			// concatenate base pose
+			a3real4Add(tmpPose.position.v, pBase->position.v);
+			a3real3ProductComp(tmpPose.scale.v, pBase->scale.v, pBase->scale.v);
+			a3real4Add(tmpPose.euler.v, pBase->euler.v);
+
+			// ****DONE:
 			// convert to matrix
 
+			//temporary matrix with scale and translation
+			a3mat4 tempMatrix = {
+				tmpPose.scale.x, 0.0f, 0.0f, 0.0f,
+				0.0f, tmpPose.scale.y, 0.0f, 0.0f,
+				0.0f, 0.0f, tmpPose.scale.z, 0.0f,
+				tmpPose.position.x, tmpPose.position.y, tmpPose.position.z, 1.0f
+			};
+
+			//rotation matrix
+			a3mat4 rotMatrix = a3mat4_identity;
+			a3real4x4SetRotateXYZ(rotMatrix.m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z); //Retrieve and store rotation matrix
+
+			a3real4x4Concat(rotMatrix.m, tempMatrix.m); // Combine matrices into one
+
+			*localSpaceArray = tempMatrix;
 		}
 
 		// done
@@ -100,10 +127,26 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 {
 	if (hierarchy && objectSpaceArray && localSpaceArray)
 	{
-		// ****TO-DO: 
+		// ****DONE: 
 		// forward kinematics
-		//a3ui32 j;
-		//a3i32 jp;
+		a3ui32 j;
+		a3i32 jp;
+
+		//Algorithm from Lecture 9 pg. 35
+
+		for (j = 0; j < hierarchy->numNodes; j++)
+		{
+			jp = hierarchy->nodes[j].parentIndex;
+
+			if (jp < 0)
+			{
+				objectSpaceArray[j] = localSpaceArray[j];
+			}
+			else
+			{
+				a3real4x4Product(objectSpaceArray[j].m, objectSpaceArray[jp].m, localSpaceArray[j].m);
+			}
+		}
 
 		// done
 		return 1;

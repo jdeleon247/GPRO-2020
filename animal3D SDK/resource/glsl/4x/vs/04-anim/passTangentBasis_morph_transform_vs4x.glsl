@@ -42,6 +42,13 @@ layout (location = 8) in vec4 aTexcoord;
 layout (location = 10) in vec3 aTangent;
 layout (location = 11) in vec3 aBitangent;*/
 
+// Single morph target: position, normal, tangent
+// 16 attributes / 3 per target = 5 targets (int) + texcoord
+
+// Not single morph target: texcoord, bitangent
+// texcoord is a shared attribute
+// bitangent is normal x tangent
+
 //Represents morph targets
 struct sMorphTarget
 {
