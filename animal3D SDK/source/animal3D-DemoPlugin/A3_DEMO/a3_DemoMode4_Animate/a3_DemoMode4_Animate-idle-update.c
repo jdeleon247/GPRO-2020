@@ -92,9 +92,9 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 
 			// ****DONE:
 			// concatenate base pose
-			a3real4Add(tmpPose.position.v, pBase->position.v);
-			a3real3ProductComp(tmpPose.scale.v, pBase->scale.v, pBase->scale.v);
-			a3real4Add(tmpPose.euler.v, pBase->euler.v);
+			a3real4Add(tmpPose.position.v, newPos.v);
+			a3real4Add(tmpPose.euler.v, newRot.v);
+			a3real3ProductComp(tmpPose.scale.v, newScale.v, pBase->scale.v);
 
 			// ****DONE:
 			// convert to matrix
@@ -148,7 +148,6 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 			}
 		}
 
-		// done
 		return 1;
 	}
 	return -1;

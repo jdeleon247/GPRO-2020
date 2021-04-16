@@ -98,8 +98,19 @@ void main()
 	vec4 aPosition;
 	vec3 aTangent, aBitangent, aNormal;
 
-	sModelMatrixStack t = uModelMatrixStack[uIndex];
 	
+	int index = int(uTime);
+	float param = uTime-index;
+
+	//Lerp position, normal, tangent, and bitangent using interpolation param
+	aPosition = aMorphTarget[index].position + (aMorphTarget[(index + 1) % 5].position - aMorphTarget[index].position) * param;
+	aTangent = aMorphTarget[index].tangent + (aMorphTarget[(index + 1) % 5].tangent - aMorphTarget[index].tangent) * param;
+	aNormal = aMorphTarget[index].normal + (aMorphTarget[(index + 1) % 5].normal - aMorphTarget[index].normal) * param;
+	aBitangent = cross(aTangent, aNormal);
+
+	sModelMatrixStack t = uModelMatrixStack[uIndex];
+
+	//Updated TBN matrix
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
 	gl_Position = t.modelViewProjectionMat * aPosition;
