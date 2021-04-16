@@ -22,6 +22,8 @@
 	Calculate and pass morphed tangent basis.
 */
 
+//Modified by Jonathan DeLeon
+
 #version 450
 
 #define MAX_OBJECTS 128
@@ -34,11 +36,22 @@
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
 
-layout (location = 0) in vec4 aPosition;
+/*layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
 layout (location = 10) in vec3 aTangent;
-layout (location = 11) in vec3 aBitangent;
+layout (location = 11) in vec3 aBitangent;*/
+
+//Represents morph targets
+struct sMorphTarget
+{
+	vec4 position;
+	vec3 normal;
+	vec3 tangent;
+};
+
+layout (location = 0) in sMorphTarget aMorphTarget[5];
+layout (location = 15) in vec4 aTexcoord;
 
 struct sModelMatrixStack
 {
@@ -56,7 +69,9 @@ uniform ubTransformStack
 {
 	sModelMatrixStack uModelMatrixStack[MAX_OBJECTS];
 };
+
 uniform int uIndex;
+uniform float uTime;
 
 out vbVertexData {
 	mat4 vTangentBasis_view;
@@ -71,6 +86,11 @@ void main()
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
 	
+	//results of morphing
+	
+	vec4 aPosition;
+	vec3 aTangent, aBitangent, aNormal;
+
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 	
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
